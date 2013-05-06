@@ -23,6 +23,7 @@ Further work to make it faster on most operations may be done.
 ##Usage:
 
 ###Array for resting 
+#####[data.php](benchmarks/data.php)
 ```php
     $json = '[
       {
@@ -176,7 +177,6 @@ print_r($s->find(array("release.arch" => array('$regex' => "/4$/"))));
 $s->convert($queryArray)
 ``` 
 ##### converts
-
 ```php
     Array
     (
@@ -205,7 +205,7 @@ $s->convert($queryArray)
                     )
             )
     )));
-  
+    
  //Checks release.version % 23 == 0 ;
  ```
 

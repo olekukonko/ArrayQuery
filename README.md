@@ -13,7 +13,7 @@ Basically talking its a convenient function to extract information from php arra
 If you are not familiar with MongoDb, take a look at a given expression object and array to search in.
 
 ##USAGE:
-[usage.md](usage.md)
+[USAGE.md](USAGE.md)
 
 ##FAQ:
 ###Why not write to MongoDB? 

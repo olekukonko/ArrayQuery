@@ -8,8 +8,8 @@ class ArrayQuery {
 
 	function __construct(array $array) {
 		$this->array = $array;
-		foreach ( $array as $k => $item ) {
-			$this->tokens[$k] = $this->tokenize($item);
+		foreach ( $array as $key => $item ) {
+			$this->tokens[$key] = $this->tokenize($item);
 		}
 	}
 
@@ -22,40 +22,40 @@ class ArrayQuery {
 	}
 
 	public function find(array $find, $type = 1) {
-		$f = array();
-		foreach ( $this->tokens as $k => $data ) {
-			$this->check($find, $data, $type) and $f[$k] = $this->array[$k];
+		$found = array();
+		foreach ( $this->tokens as $dataId => $data ) {
+			$this->check($find, $data, $type) and $found[$dataId] = $this->array[$dataId];
 		}
-		return $f;
+		return $found;
 	}
 
 	private function check($find, $data, $type) {
-		$o = $r = 0; // Obigation & Requirement
+		$obligation = $requirement = 0; // Obigation & Requirement
 		foreach ( $data as $key => $value ) {
 			if (isset($find[$key])) {
-				$r ++;
-				$options = $find[$key];
-				if (is_array($options)) {
-					reset($options);
-					$eK = key($options);
-					$eValue = current($options);
-					if (strpos($eK, '$') === 0) {
-						$this->evaluate($eK, $value, $eValue) and $o ++;
+				$requirement ++;
+				$subQuery = $find[$key];
+				if (is_array($subQuery)) {
+					reset($subQuery);
+					$subKey = key($subQuery);
+					$subValue = current($subQuery);
+					if (strpos($subKey, '$') === 0) {
+						$this->evaluate($subKey, $value, $subValue) and $obligation ++;
 					} else {
 						throw new InvalidArgumentException('Missing "$" in expession key');
 					}
 				} else {
-					$this->evaluate('$eq', $value, $options) and $o ++;
+					$this->evaluate('$eq', $value, $subQuery) and $obligation ++;
 				}
 			}
 		}
-		
-		if ($o === 0)
-			return false;
-		
-		if ($type == self::COMPLEX_AND and $o !== $r)
-			return false;
-		
+
+		if ($obligation === 0)
+		return false;
+
+		if ($type == self::COMPLEX_AND and $obligation !== $requirement)
+		return false;
+
 		return true;
 	}
 
@@ -69,8 +69,9 @@ class ArrayQuery {
 		foreach ( $array as $key => $items ) {
 			if (is_array($items)) {
 				$addParent && $paths[$px . $key] = json_encode($items);
-				foreach ( $this->tokenize($items, $px . $key) as $k => $path ) {
-					$paths[$k] = $path;
+				//$addParent && $paths[$px . $key] = $items;
+				foreach ( $this->tokenize($items, $px . $key) as $subKey => $path ) {
+					$paths[$subKey] = $path;
 				}
 			} else {
 				$paths[$px . $key] = $items;
@@ -80,81 +81,81 @@ class ArrayQuery {
 	}
 
 	private function evaluate($func, $a, $b) {
-		$r = false;
-		
+		$result = false;
+
 		switch ($func) {
 			case '$eq' :
-				$r = $a == $b;
+				$result = $a == $b;
 				break;
 			case '$not' :
-				$r = $a != $b;
+				$result = $a != $b;
 				break;
 			case '$gte' :
 			case '$gt' :
 				if ($this->checkType($a, $b)) {
-					$r = $a > $b;
+					$result = $a > $b;
 				}
 				break;
-			
+
 			case '$lte' :
 			case '$lt' :
 				if ($this->checkType($a, $b)) {
-					$r = $a < $b;
+					$result = $a < $b;
 				}
 				break;
 			case '$in' :
 				if (! is_array($b))
-					throw new InvalidArgumentException('Invalid argument for $in option must be array');
-				$r = in_array($a, $b);
+				throw new InvalidArgumentException('Invalid argument for $in option must be array');
+				$result = in_array($a, $b);
 				break;
-			
+
 			case '$has' :
 				if (is_array($b))
-					throw new InvalidArgumentException('Invalid argument for $has array not supported');
-				$a = @json_decode($a, true) ?  : array();
-				$r = in_array($b, $a);
+				throw new InvalidArgumentException('Invalid argument for $has array not supported');
+				$a = @json_decode($a, true) ? : array();
+				$result = in_array($b, $a);
 				break;
-			
+
 			case '$all' :
-				$a = @json_decode($a, true) ?  : array();
+				$a = @json_decode($a, true) ? : array();
 				if (! is_array($b))
-					throw new InvalidArgumentException('Invalid argument for $all option must be array');
-				$r = count(array_intersect_key($a, $b)) == count($b);
+				throw new InvalidArgumentException('Invalid argument for $all option must be array');
+				$result = count(array_intersect_key($a, $b)) == count($b);
 				break;
-			
+
 			case '$regex' :
 			case '$preg' :
 			case '$match' :
-				
-				$r = (boolean) preg_match($b, $a, $match);
+
+				$result = (boolean) preg_match($b, $a, $match);
 				break;
-			
+
 			case '$size' :
-				$a = @json_decode($a, true) ?  : array();
-				$r = (int) $b == count($a);
+				$a = @json_decode($a, true) ? : array();
+				$result = (int) $b == count($a);
 				break;
-			
+
 			case '$mod' :
 				if (! is_array($b))
-					throw new InvalidArgumentException('Invalid argument for $mod option must be array');
+				throw new InvalidArgumentException('Invalid argument for $mod option must be array');
 				list($x, $y) = each($b);
-				$r = $a % $x == 0;
+				$result = $a % $x == 0;
 				break;
-			
+
 			case '$func' :
 			case '$fn' :
 			case '$f' :
 				if (! is_callable($b))
-					throw new InvalidArgumentException('Function should be callable');
-				$r = $b($a);
+				throw new InvalidArgumentException('Function should be callable');
+				$result = $b($a);
 				break;
-			
+
 			default :
 				throw new ErrorException("Condition not valid ... Use \$fn for custom operations");
 				break;
 		}
-		
-		return $r;
+
+		return $result;
 	}
 
 	private function checkType($a, $b) {
@@ -162,7 +163,7 @@ class ArrayQuery {
 			$a = filter_var($a, FILTER_SANITIZE_NUMBER_FLOAT);
 			$b = filter_var($b, FILTER_SANITIZE_NUMBER_FLOAT);
 		}
-		
+
 		if (gettype($a) != gettype($b)) {
 			return false;
 		}

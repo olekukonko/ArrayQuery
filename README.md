@@ -19,7 +19,7 @@ If you are not familiar with MongoDb, take a look at a given expression object a
 [TESTING.md](TESTING.md)
 
 ##BENCHMARKS:
-[BENCHMARKS/README.md](BENCHMARKS/README.md)
+[benchmarks/README.md](benchmarks/README.md)
 
 ##FAQ:
 ###Why not write to MongoDB? 

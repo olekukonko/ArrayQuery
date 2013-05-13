@@ -69,7 +69,6 @@ class ArrayQuery {
 		foreach ( $array as $key => $items ) {
 			if (is_array($items)) {
 				$addParent && $paths[$px . $key] = json_encode($items);
-				//$addParent && $paths[$px . $key] = $items;
 				foreach ( $this->tokenize($items, $px . $key) as $subKey => $path ) {
 					$paths[$subKey] = $path;
 				}

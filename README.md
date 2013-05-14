@@ -15,6 +15,12 @@ If you are not familiar with MongoDb, take a look at a given expression object a
 ##USAGE:
 [USAGE.md](USAGE.md)
 
+##TESTING:
+[TESTING.md](TESTING.md)
+
+##BENCHMARKS:
+[benchmarks/README.md](benchmarks/README.md)
+
 ##FAQ:
 ###Why not write to MongoDB? 
 This is a raw PHP implementation that works without MongoDB, check out profiling information and use MongoDB in most cases(excluding those when you definetly don't need a database). 

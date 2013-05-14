@@ -1,6 +1,6 @@
 <?php
 class ArrayQuery_goto {
-  const COMPLEX_OR = 1;
+	const COMPLEX_OR = 1;
 	const COMPLEX_AND = 2;
 	private $array;
 	private $tokens;
@@ -35,8 +35,6 @@ class ArrayQuery_goto {
 				$found[$dataId] = $this->array[$dataId];
 			}
 			unset($tokens[$dataId]);
-			//array_shift($tokens);
-			//++$dataId_shift;
 		}
 		foreach ( $tokens as $dataId => $data ) {
 			//$this->check($find, $data, $type) and $found[$k] = $this->array[$k];
@@ -49,15 +47,13 @@ class ArrayQuery_goto {
 			if(false){
 			evalResult:
 				if ($requirement !== false){
-					$obligation++;
+					++$obligation;
 				}
-				//goto checkContinue;
 				unset($data[$key]);
-				//array_shift($data);
 			}
 			foreach ( $data as $key => $value ) {
 				if (isset($find[$key])) {
-					$requirement ++;
+					++$requirement;
 					$subQuery = $find[$key];
 					$a=$value;
 					if (is_array($subQuery)) {
@@ -80,8 +76,6 @@ class ArrayQuery_goto {
 						$b=$subQuery;
 						goto evaluate;
 					}
-					/*if(false)
-					checkContinue:	continue;*/
 				}
 			}
 			goto foundItem;
@@ -163,7 +157,6 @@ class ArrayQuery_goto {
 				}
 
 				goto evalResult;
-				//return $r;
 			}
 		}
 		goto returnResult;
@@ -179,7 +172,6 @@ class ArrayQuery_goto {
 		foreach ( $array as $key => $items ) {
 			if (is_array($items)) {
 				$addParent && $paths[$px . $key] = json_encode($items);
-				//$addParent && $paths[$px . $key] = $items;
 				foreach ( $this->tokenize($items, $px . $key) as $subKey => $path ) {
 					$paths[$subKey] = $path;
 				}

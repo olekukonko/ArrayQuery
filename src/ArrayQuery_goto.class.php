@@ -1,4 +1,9 @@
 <?php
+/**
+ * optimized(less function calls) goto-based ArrayQuery class
+ * should work faster than ArrayQuery class due to less function calls, which are replaced to goto statements
+ *
+ */
 class ArrayQuery_goto {
 	const COMPLEX_OR = 1;
 	const COMPLEX_AND = 2;

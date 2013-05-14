@@ -1,4 +1,9 @@
 <?php
+/**
+ * optimized(less function calls) goto-based ArrayQuery class with micro optimizations
+ * Consider using this class only after profiling on your data, works slower with arrays with huge nesting.
+ *
+ */
 class ArrayQuery_goto_micro {
 	const COMPLEX_OR = 1;
 	const COMPLEX_AND = 2;

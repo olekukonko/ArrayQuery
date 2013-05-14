@@ -33,19 +33,19 @@ class ArrayQuery {
 		$obligation = $requirement = 0; // Obigation & Requirement
 		foreach ( $data as $key => $value ) {
 			if (isset($find[$key])) {
-				$requirement ++;
+				++$requirement;
 				$subQuery = $find[$key];
 				if (is_array($subQuery)) {
 					reset($subQuery);
 					$subKey = key($subQuery);
 					$subValue = current($subQuery);
 					if (strpos($subKey, '$') === 0) {
-						$this->evaluate($subKey, $value, $subValue) and $obligation ++;
+						$this->evaluate($subKey, $value, $subValue) and ++$obligation;
 					} else {
 						throw new InvalidArgumentException('Missing "$" in expession key');
 					}
 				} else {
-					$this->evaluate('$eq', $value, $subQuery) and $obligation ++;
+					$this->evaluate('$eq', $value, $subQuery) and ++$obligation;
 				}
 			}
 		}
@@ -65,10 +65,11 @@ class ArrayQuery {
 
 	private function tokenize($array, $prefix = '', $addParent = true) {
 		$paths = array();
-		$px = empty($prefix) ? null : $prefix . ".";
+		$px = empty($prefix) ? null : $prefix . '.';
 		foreach ( $array as $key => $items ) {
 			if (is_array($items)) {
 				$addParent && $paths[$px . $key] = json_encode($items);
+				//$addParent && $paths[$px . $key] = $items;
 				foreach ( $this->tokenize($items, $px . $key) as $subKey => $path ) {
 					$paths[$subKey] = $path;
 				}
@@ -111,12 +112,12 @@ class ArrayQuery {
 			case '$has' :
 				if (is_array($b))
 				throw new InvalidArgumentException('Invalid argument for $has array not supported');
-				$a = @json_decode($a, true) ? : array();
+				$a = json_decode($a, true) ? : array();
 				$result = in_array($b, $a);
 				break;
 
 			case '$all' :
-				$a = @json_decode($a, true) ? : array();
+				$a = json_decode($a, true) ? : array();
 				if (! is_array($b))
 				throw new InvalidArgumentException('Invalid argument for $all option must be array');
 				$result = count(array_intersect_key($a, $b)) == count($b);
@@ -130,7 +131,7 @@ class ArrayQuery {
 				break;
 
 			case '$size' :
-				$a = @json_decode($a, true) ? : array();
+				$a = json_decode($a, true) ? : array();
 				$result = (int) $b == count($a);
 				break;
 
